@@ -279,7 +279,7 @@ if options.benchmark_stderr:
 #     print >> sys.stderr, "No workload specified. Exiting!\n"
 #     sys.exit(1)
 
-
+print "print out options --> " options
 (CPUClass, test_mem_mode, FutureClass) = Simulation.setCPUClass(options)
 CPUClass.numThreads = numThreads
 
@@ -402,5 +402,8 @@ else:
     CacheConfig.config_cache(options, system)
     MemConfig.config_mem(options, system)
 
+
+isa = str(m5.defines.buildEnv['TARGET_ISA']).lower()
+print isa
 root = Root(full_system = False, system = system)
 Simulation.run(options, root, system, FutureClass)

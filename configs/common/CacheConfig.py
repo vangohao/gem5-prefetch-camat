@@ -43,7 +43,8 @@
 
 import m5
 from m5.objects import *
-from Caches import *
+# from Caches import *
+from CachesWPrefetcher import *
 
 def config_cache(options, system):
     if options.external_memory_system and (options.caches or options.l2cache):
@@ -91,6 +92,20 @@ def config_cache(options, system):
         system.tol2bus = L2XBar(clk_domain = system.cpu_clk_domain)
         system.l2.cpu_side = system.tol2bus.master
         system.l2.mem_side = system.membus.slave
+        if options.prefetchers != "":
+            system.l2.prefetch_on_access = True;
+            if options.prefetchers == "tagged":
+                print "Using Tagged Prefetcher!"
+                system.l2.prefetcher = TaggedPrefetcher()
+            elif options.prefetchers == "stride":
+                print "Using Stride Prefetcher!"
+                system.l2.prefetcher = StridePrefetcher()
+            elif options.prefetchers == "stream":
+                print "Using Stream Prefetcher!"
+                system.l2.prefetcher = StreamPrefetcher()
+            elif options.prefetchers == "lookahead":
+                print "Using Lookahead Prefetcher!"
+                system.l2.prefetcher = LookaheadPrefetcher()
 
     if options.memchecker:
         system.memchecker = MemChecker()
