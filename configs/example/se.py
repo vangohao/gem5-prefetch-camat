@@ -60,7 +60,8 @@ from common import Simulation
 from common import CacheConfig
 from common import CpuConfig
 from common import MemConfig
-from common.Caches import *
+from common.CachesWPrefetcher import *
+# from common.Caches import *
 from common.cpu2000 import *
 
 # Check if KVM support has been enabled, we might need to do VM

@@ -15,12 +15,12 @@ class L1Cache(Cache):
         super(L1Cache, self).__init__()
         pass
 
+    '''
     def connectCPU(self, cpu):
         raise NotImplementedError
 
     def connectBus(self, bus):
         self.mem_side = bus.slave
-    '''
 
 class L1_ICache(L1Cache):
     size = '16kB'
@@ -34,9 +34,9 @@ class L1_ICache(L1Cache):
             return
         self.size = options.l1i_size
 
+    '''
     def connectCPU(self, cpu):
         self.cpu_side = cpu.icache_port
-    '''
 
 class L1_DCache(L1Cache):
     size = '64kB'
@@ -46,10 +46,10 @@ class L1_DCache(L1Cache):
         if not options or not options.l1d_size:
             return
         self.size = options.l1d_size
+    '''
 
     def connectCPU(self, cpu):
         self.cpu_side = cpu.dcache_port
-    '''
 
 class L2Cache(Cache):
     size = '256kB'
@@ -59,6 +59,7 @@ class L2Cache(Cache):
     response_latency = 20
     mshrs = 20
     tgts_per_mshr = 12
+    prefetch_on_access = True
     prefetcher = StridePrefetcher(degree=8, latency=1.0)
     # prefetcher = LookaheadPrefetcher(queue_squash=False)
 
@@ -69,12 +70,12 @@ class L2Cache(Cache):
             return
         self.size = options.l2_size
 
+    '''
     def connectCPUSideBus(self, bus):
         self.cpu_side = bus.master
 
     def connectMemSideBus(self, bus):
         self.mem_side = bus.slave
-    '''
 
 
 class IOCache(Cache):
