@@ -3,7 +3,6 @@
 
 #include "mem/cache/prefetch/queued.hh"
 #include "params/StreamPrefetcher.hh"
-
 // Direction of stream for each stream entry in the stream table
 enum StreamDirection{
         ASCENDING = 1,                      // For example - A, A+1, A+2

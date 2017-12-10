@@ -1,28 +1,57 @@
-#include <vector>
-
-#include "debug/HWPrefetch.hh"
-#include "mem/cache/cache.hh"
 #include "mem/cache/prefetch/dpc_base.hh"
+#include "mem/cache/cache.hh"
 #include "mem/cache/tags/base_set_assoc.hh"
+#include "debug/HWPrefetch.hh"
+#include <vector>
 
 // Need to make sure BaseCache is at least type Cache
 
 
 //#####################DPCPrefetcher###########################
 DPCPrefetcher::DPCPrefetcher(const DPCPrefetcherParams *p) :
-    QueuedPrefetcher(p),
-    CACHE_LINE_SIZE(blkSize),  // blkSize;
-    PAGE_SIZE(pageBytes),        // pagebytes
-    L2_MSHR_COUNT(((::Cache*)cache)->mshrQueue.numEntries),    // cache->mshrQueue.
-    L2_READ_QUEUE_SIZE(32), // 32
-    L2_SET_COUNT(((BaseSetAssoc*)((::Cache*)cache)->tags)->numSets),     //(BaseSetAsso)  cache->tags->numSet
-    L2_ASSOCIATIVITY(((BaseSetAssoc*)((::Cache*)cache)->tags)->assoc) //cache->tags-> assoc
+    QueuedPrefetcher(p)
+#if 0
+    ,CACHE_LINE_SIZE(blkSize),
+    PAGE_SIZE(pageBytes),
+    L2_MSHR_COUNT(((::Cache*)cache)->mshrQueue.numEntries),
+    L2_READ_QUEUE_SIZE(32),
+    L2_SET_COUNT(((BaseSetAssoc*)((::Cache*)cache)->tags)->numSets),
+    L2_ASSOCIATIVITY(((BaseSetAssoc*)((::Cache*)cache)->tags)->assoc)
+#endif
 {
-    DPRINTF(HWPrefetch, "DPCPrefetcher%d",queueSize);
+
+
+}
+
+void DPCPrefetcher::setCache(BaseCache *_cache)
+{
+    QueuedPrefetcher::setCache(_cache);
+
+    DPRINTF(HWPrefetch,"CACHE_LINE_SIZE = %d\n",(blkSize));
+    DPRINTF(HWPrefetch,"PAGE_SIZE = %d\n",(pageBytes));
+    DPRINTF(HWPrefetch,"L2_MSHR_COUNT = %d\n",(((::Cache*)cache)->mshrQueue.numEntries));
+    DPRINTF(HWPrefetch,"L2_READ_QUEUE_SIZE = %d\n",(32));
+    DPRINTF(HWPrefetch,"L2_SET_COUNT = %d\n",(((BaseSetAssoc*)((::Cache*)cache)->tags)->numSets));
+    DPRINTF(HWPrefetch,"L2_ASSOCIATIVITY = %d\n",(((BaseSetAssoc*)((::Cache*)cache)->tags)->assoc));
+
+    assert(CACHE_LINE_SIZE==(blkSize));
+    assert(PAGE_SIZE==(pageBytes));
+    assert(L2_MSHR_COUNT==(((::Cache*)cache)->mshrQueue.numEntries));
+    assert(L2_READ_QUEUE_SIZE==(32));
+    assert(L2_SET_COUNT==(((BaseSetAssoc*)((::Cache*)cache)->tags)->numSets));
+    assert(L2_ASSOCIATIVITY==(((BaseSetAssoc*)((::Cache*)cache)->tags)->assoc));
 }
 
 void DPCPrefetcher::calculatePrefetch(const PacketPtr &pkt, std::vector<AddrPriority> &addresses)
-{}
+{
+    int cpu_num = 0; //    uint32_t core_id = pkt->req->hasContextId() ? pkt->req->contextId() : -1;           ?
+    Addr pkt_addr = pkt->getAddr();
+    bool is_secure = pkt->isSecure();
+    l2_prefetcher_operate(cpu_num, pkt->getAddr(), pkt->req->getPC(), inCache(pkt_addr, is_secure)||inMissQueue(pkt_addr, is_secure));
+    addresses.insert(addresses.end(), _addresses.begin(), _addresses.end());
+    _addresses.clear();
+}
+
 int
 DPCPrefetcher::l2_get_set(unsigned long long int addr, bool is_secure)
 {
@@ -68,11 +97,10 @@ DPCPrefetcher::l2_prefetch_line(int cpu_num, unsigned long long int base_addr, u
     return 1;
 }
 
-#if 0
 unsigned long long int DPCPrefetcher::get_current_cycle(int cpu_num)
 {
-    return 0;
+    return curTick();
 }
-#endif
+
 
 //---------------------DPCPrefetcher---------------------------

@@ -53,6 +53,7 @@
 #include "mem/cache/prefetch/queued.hh"
 #include "params/LookaheadPrefetcher.hh"
 
+
 // Signature table configuration
 #define ST_SET 512
 #define ST_WAY 2

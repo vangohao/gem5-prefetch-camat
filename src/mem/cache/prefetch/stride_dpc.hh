@@ -106,8 +106,7 @@ class StridePrefetcher : public QueuedPrefetcher
     };
     PCTable pcTable;
 
-    bool pcTableHit(Addr pc, bool is_secure, int master_id,
-                    StrideEntry* &entry);
+    bool pcTableHit(Addr pc, bool is_secure, int master_id, StrideEntry* &entry);
     StrideEntry* pcTableVictim(Addr pc, int master_id);
 
     Addr pcHash(Addr pc) const;

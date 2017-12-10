@@ -112,4 +112,9 @@ class DPCPrefetcher(QueuedPrefetcher):
     type = 'DPCPrefetcher'
     abstract = True
     cxx_class = 'DPCPrefetcher'
-    cxx_header = "../../mem/cache/prefetch/dpc_base.hh"
+    cxx_header = "mem/cache/prefetch/dpc_base.hh"
+
+class BestOffsetPrefetcher(DPCPrefetcher):
+    type = 'BestOffsetPrefetcher'
+    cxx_class = 'BestOffsetPrefetcher'
+    cxx_header = "mem/cache/prefetch/best_offset.hh"

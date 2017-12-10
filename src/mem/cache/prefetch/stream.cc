@@ -7,9 +7,9 @@ StreamPrefetcher::StreamPrefetcher(const StreamPrefetcherParams *p)
   useMasterId(p->use_master_id),
   degree(p->degree),
   distance(p->distance) {
-    for (int i=0; i<MaxContexts; i++) {
+    for(int i=0; i<MaxContexts; i++) {
         StreamTable[i] = new StreamTableEntry*[tableSize];
-        for (int j=0; j<tableSize; j++) {
+        for(int j=0; j<tableSize; j++) {
             StreamTable[i][j] = new StreamTableEntry[tableSize];
             StreamTable[i][j]->LRU_index = j;
             resetEntry(StreamTable[i][j]);
@@ -44,16 +44,16 @@ StreamPrefetcher::calculatePrefetch(const PacketPtr &pkt,
     for (i = 0; i < tableSize; i++) {
         switch (table[i]->status) {
         case MONITOR:
-            if (table[i]->trainedDirection == ASCENDING) {
+            if(table[i]->trainedDirection == ASCENDING) {
                 // Ascending order
-                if ((table[i]->startAddr < blk_addr ) && ( table[i]->endAddr > blk_addr)) {
+                if((table[i]->startAddr < blk_addr ) && ( table[i]->endAddr > blk_addr)) {
                     // Hit to a stream, which is monitored. Issue prefetch requests based on the degree and the direction
                     for (uint8_t d = 1; d <= degree; d++) {
                         Addr pf_addr = table[i]->endAddr + blkSize * d;
                         addresses.push_back(AddrPriority(pf_addr,0));
                         DPRINTF(HWPrefetch, "Queuing prefetch to %#x.\n", pf_addr);
                     }
-                    if ((table[i]->endAddr + blkSize * degree) - table[i]->startAddr <= distance) {
+                    if((table[i]->endAddr + blkSize * degree) - table[i]->startAddr <= distance) {
                         table[i]->endAddr   = table[i]->endAddr + blkSize * degree;
                     } else {
                         table[i]->startAddr = table[i]->startAddr + blkSize * degree;
@@ -61,15 +61,15 @@ StreamPrefetcher::calculatePrefetch(const PacketPtr &pkt,
                     }
                     break;
                 }
-            } else if (table[i]->trainedDirection == DESCENDING) {
+            } else if(table[i]->trainedDirection == DESCENDING) {
                 // Descending order
-                if ((table[i]->startAddr > blk_addr ) && (table[i]->endAddr < blk_addr)) {
+                if((table[i]->startAddr > blk_addr ) && (table[i]->endAddr < blk_addr)) {
                     for (uint8_t d = 1; d <= degree; d++) {
                         Addr pf_addr = table[i]->endAddr - blkSize * d;
                         addresses.push_back(AddrPriority(pf_addr,0));
                         DPRINTF(HWPrefetch, "Queuing prefetch to %#x.\n", pf_addr);
                     }
-                    if (table[i]->startAddr - (table[i]->endAddr - blkSize * degree) <= distance){
+                    if(table[i]->startAddr - (table[i]->endAddr - blkSize * degree) <= distance){
                         table[i]->endAddr   = table[i]->endAddr - blkSize * degree;
                     } else {
                         table[i]->startAddr = table[i]->startAddr - blkSize * degree;
@@ -84,15 +84,15 @@ StreamPrefetcher::calculatePrefetch(const PacketPtr &pkt,
         case TRAINING:
             if ((abs(table[i]->allocAddr - blk_addr) <= (distance/2) * blkSize) ){
                 // Check whether the address is in +/- of distance
-                if (table[i]->trendDirection[0] == INVALID){
+                if(table[i]->trendDirection[0] == INVALID){
                     table[i]->trendDirection[0] = (blk_addr - table[i]->allocAddr > 0) ? ASCENDING : DESCENDING;
                 } else {
                     assert(table[i]->trendDirection[1] == INVALID);
                     table[i]->trendDirection[1] = (blk_addr - table[i]->allocAddr > 0) ? ASCENDING : DESCENDING;
-                    if (table[i]->trendDirection[0] == table[i]->trendDirection[1]) {
+                    if(table[i]->trendDirection[0] == table[i]->trendDirection[1]) {
                         table[i]->trainedDirection = table[i]->trendDirection[0];
                         table[i]->startAddr = table[i]->allocAddr;
-                        if (table[i]->trainedDirection != INVALID){
+                        if(table[i]->trainedDirection != INVALID){
                             // Based on the trainedDirection (+1:Ascending, -1:Descending) update the end address of a stream
                             table[i]->endAddr = blk_addr + (table[i]->trainedDirection) * blkSize * degree;
                         }
@@ -113,7 +113,7 @@ StreamPrefetcher::calculatePrefetch(const PacketPtr &pkt,
     int INVALID_index = tableSize;
     for (int i=0; i<tableSize; i++) {
         //find empty entry
-        if (table[i]->status==INV) {
+        if(table[i]->status==INV) {
             INVALID_index = i;
             break;
         }
@@ -122,14 +122,14 @@ StreamPrefetcher::calculatePrefetch(const PacketPtr &pkt,
     int LRU_index = -1000000;
     for (int i=0; i<tableSize; i++) {
         //find empty entry
-        if (table[i]->LRU_index > TEMP_index) {
+        if(table[i]->LRU_index > TEMP_index) {
             TEMP_index = table[i]->LRU_index;
             LRU_index  = i;
         }
     }
     assert(TEMP_index == tableSize - 1);
     int entry_id;
-    if (HIT_index!=tableSize) {  //hit
+    if(HIT_index!=tableSize) {  //hit
         entry_id = HIT_index;
     } else if (INVALID_index!=tableSize) {
         //Existence of invalid streams
@@ -147,7 +147,7 @@ StreamPrefetcher::calculatePrefetch(const PacketPtr &pkt,
     }
     // Shifting the table entries after the eviction of lru-id
     for (int i=0; i<tableSize; i++) {
-        if (table[i]->LRU_index < table[entry_id]->LRU_index){
+        if(table[i]->LRU_index < table[entry_id]->LRU_index){
             table[i]->LRU_index = table[i]->LRU_index + 1;
         }
     }

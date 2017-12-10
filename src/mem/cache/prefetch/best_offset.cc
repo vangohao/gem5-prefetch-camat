@@ -1,58 +1,51 @@
+// Submission ID: 3
+// Paper title: A Best-Offset Prefetcher
+// Author: Pierre Michaud
+
+#include "mem/cache/prefetch/best_offset.hh"
 #include <cstdio>
 #include <cstdlib>
 
-#include "../inc/prefetcher.h"
-
-// Submission ID: 3
-
-// Paper title: A Best-Offset Prefetcher
-
-// Author: Pierre Michaud
-
-
-//######################################################################################
-//                             PREFETCHER PARAMETERS
-//######################################################################################
-
-// Because prefetch cannot cross 4KB-page boundaries, there is no need to consider offsets
-// greater than 63. However, with pages larger than 4KB, it would be beneficial to consider
-// larger offsets.
-
-#define NOFFSETS 46
-int OFFSET[NOFFSETS] = {1,-1,2,-2,3,-3,4,-4,5,-5,6,-6,7,-7,8,-8,9,-9,10,-10,11,-11,12,-12,13,-13,14,-14,15,-15,16,-16,18,-18,20,-20,24,-24,30,-30,32,-32,36,-36,40,-40};
-#define DEFAULT_OFFSET 1
-#define SCORE_MAX 31
-#define ROUND_MAX 100
-#define RRTAG 12
-#define DELAYQSIZE 15
-#define DELAY 60
-#define TIME_BITS 12
-#define LLC_RATE_MAX 255
-#define GAUGE_MAX 8191
-#define MSHR_THRESHOLD_MAX (L2_MSHR_COUNT-4)  // TODO: find these
-#define MSHR_THRESHOLD_MIN 2                  // TODO: find these
-#define LOW_SCORE 20
-#define BAD_SCORE ((knob_small_llc)? 10 : 1)
-#define BANDWIDTH ((knob_low_bandwidth)? 64 : 16)
-
-
-
+//#include "debug/HWPrefetch.hh"
 
 //######################################################################################
 //                            SOME MACROS & DEFINITIONS
 //######################################################################################
-
-#define LOGLINE 6
-
 #define SAMEPAGE(lineaddr1,lineaddr2) ((((lineaddr1) ^ (lineaddr2)) >> 6) == 0)
 
 #define INCREMENT(x,n) {x++; if (x==(n)) x=0;}
 
 #define TRUNCATE(x,nbits) (((x) & ((1<<(nbits))-1)))
 
+#define LOGLINE 6
 
+#define DEFAULT_OFFSET 1
+#define RRTAG 12
+#define DELAY 60
+#define TIME_BITS 12
+#define LLC_RATE_MAX 255
+#define GAUGE_MAX 8191
+#define MSHR_THRESHOLD_MAX (L2_MSHR_COUNT-4)
+#define MSHR_THRESHOLD_MIN 2
+#define LOW_SCORE 20
+#define BAD_SCORE 10
+#define BANDWIDTH 64
 
+#define SCORE_MAX 31
+#define ROUND_MAX 100
+//#define BAD_SCORE ((knob_small_llc)? 10 : 1)
+//#define BANDWIDTH ((knob_low_bandwidth)? 64 : 16)
+int OFFSETS[NOFFSETS] = {1,-1,2,-2,3,-3,4,-4,5,-5,6,-6,7,-7,8,-8,9,-9,10,-10,11,-11,12,-12,13,-13,14,-14,15,-15,16,-16,18,-18,20,-20,24,-24,30,-30,32,-32,36,-36,40,-40};
 
+BestOffsetPrefetcher::BestOffsetPrefetcher(const BestOffsetPrefetcherParams *p) :
+    DPCPrefetcher(p)
+{}
+
+BestOffsetPrefetcher*
+BestOffsetPrefetcherParams::create()
+{
+    return new BestOffsetPrefetcher(this);
+}
 
 //######################################################################################
 //                            RECENT REQUESTS TABLE (RR)
@@ -284,7 +277,7 @@ void BestOffsetPrefetcher::os_reset()
 
 void BestOffsetPrefetcher::os_learn_best_offset(t_addr lineaddr)
 {
-  int testoffset = OFFSET[os.p];
+  int testoffset = OFFSETS[os.p];
   t_addr testlineaddr = lineaddr - testoffset;
 
   if (SAMEPAGE(lineaddr,testlineaddr) && rr_hit(testlineaddr)) {
@@ -308,8 +301,8 @@ void BestOffsetPrefetcher::os_learn_best_offset(t_addr lineaddr)
       pt_update_mshr_threshold();
 
       if (os.max_score <= BAD_SCORE) {
-        // prefetch accuracy is likely to be very low ==> turn the prefetch off
-        prefetch_offset = 0;
+	// prefetch accuracy is likely to be very low ==> turn the prefetch off
+	prefetch_offset = 0;
       }
       // new learning phase starts
       os_reset();
@@ -434,36 +427,18 @@ void BestOffsetPrefetcher::l2_cache_fill(int cpu_num, unsigned long long int add
   }
 }
 
-void BestOffsetPrefetcher::calculatePrefetch(const PacketPtr &pkt,
-                       std::vector<AddrPriority> &addresses)
-{
-    if (!pkt->req->hasPC()) {
-        DPRINTF(HWPrefetch, "Ignoring request with no PC.\n");
-        return;
-    }
 
-// Get required packet info
-    Addr pkt_addr = pkt->getAddr();
-    Addr pc = pkt->req->getPC();
-    //bool is_secure = pkt->isSecure();
-    //MasterID master_id = useMasterId ? pkt->req->masterId() : 0;
-    //l2_prefetcher_operate(int cpu_num, unsigned long long int addr, unsigned long long int ip, int cache_hit);
-
-
-}
-#if 0
-void l2_prefetcher_heartbeat_stats(int cpu_num)
+void BestOffsetPrefetcher::l2_prefetcher_heartbeat_stats(int cpu_num)
 {
 
 }
 
-void l2_prefetcher_warmup_stats(int cpu_num)
+void BestOffsetPrefetcher::l2_prefetcher_warmup_stats(int cpu_num)
 {
 
 }
 
-void l2_prefetcher_final_stats(int cpu_num)
+void BestOffsetPrefetcher::l2_prefetcher_final_stats(int cpu_num)
 {
 
 }
-#endif
