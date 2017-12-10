@@ -52,12 +52,12 @@ class L1_DCache(L1Cache):
         self.cpu_side = cpu.dcache_port
 
 class L2Cache(Cache):
-    size = '256kB'
+    size = '128kB'
     assoc = 8
     tag_latency = 20
     data_latency = 20
     response_latency = 20
-    mshrs = 20
+    mshrs = 16
     tgts_per_mshr = 12
     prefetch_on_access = True
     prefetcher = StridePrefetcher(degree=8, latency=1.0)

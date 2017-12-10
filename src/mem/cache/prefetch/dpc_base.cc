@@ -40,15 +40,24 @@ void DPCPrefetcher::setCache(BaseCache *_cache)
     assert(L2_READ_QUEUE_SIZE==(32));
     assert(L2_SET_COUNT==(((BaseSetAssoc*)((::Cache*)cache)->tags)->numSets));
     assert(L2_ASSOCIATIVITY==(((BaseSetAssoc*)((::Cache*)cache)->tags)->assoc));
+
+    int cpu_num = 0;
+    l2_prefetcher_initialize(cpu_num);
 }
 
 void DPCPrefetcher::calculatePrefetch(const PacketPtr &pkt, std::vector<AddrPriority> &addresses)
 {
+    if (!pkt->req->hasPC()) {
+        DPRINTF(HWPrefetch, "Ignoring request with no PC.\n");
+        return;
+    }
     int cpu_num = 0; //    uint32_t core_id = pkt->req->hasContextId() ? pkt->req->contextId() : -1;           ?
     Addr pkt_addr = pkt->getAddr();
     bool is_secure = pkt->isSecure();
     l2_prefetcher_operate(cpu_num, pkt->getAddr(), pkt->req->getPC(), inCache(pkt_addr, is_secure)||inMissQueue(pkt_addr, is_secure));
+    //DPRINTF(HWPrefetch,"queue size before : %d\n ", addresses.size());
     addresses.insert(addresses.end(), _addresses.begin(), _addresses.end());
+    //DPRINTF(HWPrefetch,"queue size after : %d\n ", addresses.size());
     _addresses.clear();
 }
 
@@ -94,6 +103,7 @@ DPCPrefetcher::l2_prefetch_line(int cpu_num, unsigned long long int base_addr, u
     // need to check not cross page
     // returns 1 all the time for now.
     _addresses.push_back(AddrPriority(pf_addr, 0));
+//    DPRINTF(HWPrefetch,"Prefetching %#x, now %d queueing\n", pf_addr, _addresses.size());
     return 1;
 }
 

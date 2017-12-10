@@ -95,17 +95,20 @@ def config_cache(options, system):
         if options.prefetchers != "":
             system.l2.prefetch_on_access = True;
             if options.prefetchers == "tagged":
-                print "Using Tagged Prefetcher!"
+                print "***USING Tagged Prefetcher!***"
                 system.l2.prefetcher = TaggedPrefetcher()
             elif options.prefetchers == "stride":
-                print "Using Stride Prefetcher!"
+                print "***USING Stride Prefetcher!***"
                 system.l2.prefetcher = StridePrefetcher()
             elif options.prefetchers == "stream":
-                print "Using Stream Prefetcher!"
+                print "***USING Stream Prefetcher!***"
                 system.l2.prefetcher = StreamPrefetcher()
             elif options.prefetchers == "lookahead":
-                print "Using Lookahead Prefetcher!"
+                print "***USING Lookahead Prefetcher!***"
                 system.l2.prefetcher = LookaheadPrefetcher()
+            elif options.prefetchers == "bestoffset":
+                print "***USING Best-Offset Prefetcher!***"
+                system.l2.prefetcher = BestOffsetPrefetcher()
 
     if options.memchecker:
         system.memchecker = MemChecker()
