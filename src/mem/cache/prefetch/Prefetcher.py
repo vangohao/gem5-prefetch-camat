@@ -90,3 +90,26 @@ class TaggedPrefetcher(QueuedPrefetcher):
     cxx_header = "mem/cache/prefetch/tagged.hh"
 
     degree = Param.Int(2, "Number of prefetches to generate")
+
+class StreamPrefetcher(QueuedPrefetcher):
+    type = 'StreamPrefetcher'
+    cxx_class = 'StreamPrefetcher'
+    cxx_header = "mem/cache/prefetch/stream.hh"
+    table_sets = Param.Int(16, "Number of sets in PC lookup table")
+    table_assoc = Param.Int(16, "Associativity of PC lookup table")
+    tableSize = Param.Int(8, "Number of sets in PC lookup table")
+    distance = Param.Int(5, "Associativity of PC look table")
+    use_master_id = Param.Bool(True, "Use master id based history")
+    degree = Param.Int(4, "Number of prefetches to generate")
+
+class LookaheadPrefetcher(QueuedPrefetcher):
+    type = 'LookaheadPrefetcher'
+    cxx_class = 'LookaheadPrefetcher'
+    cxx_header = "mem/cache/prefetch/lookahead_dpc.hh"
+#    degree = Param.Int(4, "Number of prefetches to generate")
+
+class DPCPrefetcher(QueuedPrefetcher):
+    type = 'DPCPrefetcher'
+    abstract = True
+    cxx_class = 'DPCPrefetcher'
+    cxx_header = "../../mem/cache/prefetch/dpc_base.hh"

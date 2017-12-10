@@ -65,7 +65,7 @@
 
 //Forward decleration
 class BasePrefetcher;
-
+class DPCPrefetcher;
 /**
  * A template-policy based cache. The behavior of the cache can be altered by
  * supplying different template policies. TagStore handles all tag and data
@@ -73,6 +73,8 @@ class BasePrefetcher;
  */
 class Cache : public BaseCache
 {
+    friend class DPCPrefetcher;
+
   protected:
 
     /**

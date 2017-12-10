@@ -36,4 +36,6 @@ Source('base.cc')
 Source('queued.cc')
 Source('stride.cc')
 Source('tagged.cc')
-
+Source('stream.cc')
+Source('lookahead_dpc.cc')
+Source('dpc_base.cc')

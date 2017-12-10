@@ -84,6 +84,7 @@ Cache::Cache(const CacheParams *p)
                                   "CpuSidePort");
     memSidePort = new MemSidePort(p->name + ".mem_side", this,
                                   "MemSidePort");
+    std::cout<<"using this cacche!!!!!!!!!!!!!##############"<<std::endl;
 
     tags->setCache(this);
     if (prefetcher)

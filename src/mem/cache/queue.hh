@@ -66,7 +66,7 @@ class Queue : public Drainable
   protected:
     /** Local label (for functional print requests) */
     const std::string label;
-
+public:
     /**
      * The total number of entries in this queue. This number is set
      * as the number of entries requested plus any reserve. This
@@ -74,7 +74,7 @@ class Queue : public Drainable
      * maintaining an overflow reserve.
      */
     const int numEntries;
-
+protected:
     /**
      * The number of entries to hold as a temporary overflow
      * space. This is used to allow temporary overflow of the number
