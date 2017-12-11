@@ -109,6 +109,12 @@ def config_cache(options, system):
             elif options.prefetchers == "bestoffset":
                 print "***USING Best-Offset Prefetcher!***"
                 system.l2.prefetcher = BestOffsetPrefetcher()
+            elif options.prefetchers == "stride_dpc":
+                print "***USING Stride_DPC Prefetcher!***"
+                system.l2.prefetcher = Stride_DPCPrefetcher()
+            elif options.prefetchers == "mpm_dpc":
+                print "***USING MPM_DPC Prefetcher!***"
+                system.l2.prefetcher = MPM_DPCPrefetcher()
 
     if options.memchecker:
         system.memchecker = MemChecker()
