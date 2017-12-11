@@ -59,8 +59,8 @@ class L2Cache(Cache):
     response_latency = 20
     mshrs = 16
     tgts_per_mshr = 12
-    prefetch_on_access = True
-    prefetcher = StridePrefetcher(degree=8, latency=1.0)
+    # prefetch_on_access = False
+    # prefetcher = StridePrefetcher(degree=8, latency=1.0)
     # prefetcher = LookaheadPrefetcher(queue_squash=False)
 
     '''

@@ -102,6 +102,9 @@ DPCPrefetcher::l2_prefetch_line(int cpu_num, unsigned long long int base_addr, u
 {
     // need to check not cross page
     // returns 1 all the time for now.
+    if (!samePage(base_addr, pf_addr))
+        return 0;
+
     _addresses.push_back(AddrPriority(pf_addr, 0));
 //    DPRINTF(HWPrefetch,"Prefetching %#x, now %d queueing\n", pf_addr, _addresses.size());
     return 1;
