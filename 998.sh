@@ -1,0 +1,7 @@
+./build/X86/gem5.opt --outdir m5out-998-none  configs/example/se.py -c ../cpu2006/benchspec/CPU2006/998.specrand/exe/specrand_base.amd64-m64-gcc42-nn -o "342 24239" --caches --l2cache --mem-size 2048MB --cpu-type TimingSimpleCPU &
+./build/X86/gem5.opt --outdir m5out-998-tagged  configs/example/se.py -c ../cpu2006/benchspec/CPU2006/998.specrand/exe/specrand_base.amd64-m64-gcc42-nn -o "342 24239" --caches --l2cache --mem-size 2048MB --cpu-type TimingSimpleCPU --prefetcher tagged &
+./build/X86/gem5.opt --outdir m5out-998-stride  configs/example/se.py -c ../cpu2006/benchspec/CPU2006/998.specrand/exe/specrand_base.amd64-m64-gcc42-nn -o "342 24239" --caches --l2cache --mem-size 2048MB --cpu-type TimingSimpleCPU --prefetcher stride &
+./build/X86/gem5.opt --outdir m5out-998-bestoffset  configs/example/se.py -c ../cpu2006/benchspec/CPU2006/998.specrand/exe/specrand_base.amd64-m64-gcc42-nn -o "342 24239" --caches --l2cache --mem-size 2048MB --cpu-type TimingSimpleCPU --prefetcher bestoffset &
+./build/X86/gem5.opt --outdir m5out-998-lookahead  configs/example/se.py -c ../cpu2006/benchspec/CPU2006/998.specrand/exe/specrand_base.amd64-m64-gcc42-nn -o "342 24239" --caches --l2cache --mem-size 2048MB --cpu-type TimingSimpleCPU --prefetcher lookahead &
+./build/X86/gem5.opt --outdir m5out-998-stream  configs/example/se.py -c ../cpu2006/benchspec/CPU2006/998.specrand/exe/specrand_base.amd64-m64-gcc42-nn -o "342 24239" --caches --l2cache --mem-size 2048MB --cpu-type TimingSimpleCPU --prefetcher stream &
+
