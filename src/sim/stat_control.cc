@@ -46,8 +46,6 @@
 // This file will contain default statistics for the simulator that
 // don't really belong to a specific simulator object
 
-#include "sim/stat_control.hh"
-
 #include <fstream>
 #include <iostream>
 #include <list>
@@ -57,7 +55,9 @@
 #include "base/statistics.hh"
 #include "base/time.hh"
 #include "cpu/base.hh"
+#include "mem/cache/base.hh"
 #include "sim/global_event.hh"
+#include "sim/stat_control.hh"
 
 using namespace std;
 
@@ -65,6 +65,17 @@ Stats::Formula simSeconds;
 Stats::Value simTicks;
 Stats::Value finalTick;
 Stats::Value simFreq;
+Stats::Value Accumulated_Hit_Cycle_L2;
+Stats::Value Active_Hit_Cycle_L2;
+Stats::Value Active_Miss_Cycle_L2;
+Stats::Value Active_Pure_Hit_Cycle_L2;
+Stats::Value Accumulated_Hit_Cycle_L1dcache;
+Stats::Value Active_Hit_Cycle_L1dcache;
+Stats::Value Active_Miss_Cycle_L1dcache;
+Stats::Value Active_Pure_Hit_Cycle_L1dcache;
+
+
+
 
 namespace Stats {
 
@@ -128,6 +139,70 @@ Global::Global()
         .desc("Number of instructions simulated")
         .precision(0)
         .prereq(simInsts)
+        ;
+
+    Accumulated_Hit_Cycle_L1dcache
+        .functor(BaseCache::GET_Accumulated_Hit_Cycle_L1dcache)
+        .name("Accumulated_Hit_Cycle_L1dcache")
+        .desc("Number of Accumulated_Hit_Cycle_L1dcache")
+        .precision(0)
+        .prereq(Accumulated_Hit_Cycle_L1dcache)
+        ;
+
+    Active_Hit_Cycle_L1dcache
+        .functor(BaseCache::GET_Active_Hit_Cycle_L1dcache)
+        .name("Active_Hit_Cycle_L1dcache")
+        .desc("Number of Active_Hit_Cycle_L1dcache")
+        .precision(0)
+        .prereq(Active_Hit_Cycle_L1dcache)
+        ;
+
+    Active_Miss_Cycle_L1dcache
+        .functor(BaseCache::GET_Active_Miss_Cycle_L1dcache)
+        .name("Active_Miss_Cycle_L1dcache")
+        .desc("Number of Active_Miss_Cycle_L1dcache")
+        .precision(0)
+        .prereq(Active_Miss_Cycle_L1dcache)
+        ;
+
+    Active_Pure_Hit_Cycle_L1dcache
+        .functor(BaseCache::GET_Active_Pure_Hit_Cycle_L1dcache)
+        .name("Active_Pure_Hit_Cycle_L1dcache")
+        .desc("Number of Active_Pure_Hit_Cycle_L1dcache")
+        .precision(0)
+        .prereq(Active_Pure_Hit_Cycle_L1dcache)
+        ;
+
+    Accumulated_Hit_Cycle_L2
+        .functor(BaseCache::GET_Accumulated_Hit_Cycle_L2)
+        .name("Accumulated_Hit_Cycle_L2")
+        .desc("Number of Accumulated_Hit_Cycle_L2")
+        .precision(0)
+        .prereq(Accumulated_Hit_Cycle_L2)
+        ;
+
+    Active_Hit_Cycle_L2
+        .functor(BaseCache::GET_Active_Hit_Cycle_L2)
+        .name("Active_Hit_Cycle_L2")
+        .desc("Number of Active_Hit_Cycle_L2")
+        .precision(0)
+        .prereq(Active_Hit_Cycle_L2)
+        ;
+
+    Active_Miss_Cycle_L2
+        .functor(BaseCache::GET_Active_Miss_Cycle_L2)
+        .name("Active_Miss_Cycle_L2")
+        .desc("Number of Active_Miss_Cycle_L2")
+        .precision(0)
+        .prereq(Active_Miss_Cycle_L2)
+        ;
+
+     Active_Pure_Hit_Cycle_L2
+        .functor(BaseCache::GET_Active_Pure_Hit_Cycle_L2)
+        .name("Active_Pure_Hit_Cycle_L2")
+        .desc("Number of Active_Pure_Hit_Cycle_L2")
+        .precision(0)
+        .prereq(Active_Pure_Hit_Cycle_L2)
         ;
 
     simOps

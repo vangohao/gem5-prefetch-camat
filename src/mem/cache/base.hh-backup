@@ -300,11 +300,6 @@ class BaseCache : public MemObject
      */
     const bool isReadOnly;
 
-    /** Is this cache a toplevel cache (e.g. L1, I/O cache). If so we should
-     * never try to forward ownership and similar optimizations to the cpu
-     * side */
-    const bool isTopLevel;
-
     /**
      * Bit vector of the blocking reasons for the access path.
      * @sa #BlockedCause
@@ -331,20 +326,6 @@ class BaseCache : public MemObject
   public:
     /** System we are currently operating in. */
     System *system;
-   //Xiaoyang
-        static 	Tick 	Accumulated_Hit_cycle_L2;
-        static 	Tick  	Active_Pure_Hit_cycle_L2;
-        static  Tick   	Active_Hit_cycle_L2;
-        static 	Tick  	Active_Miss_cycle_L2;
-        static 	Tick 	Accumulated_Hit_cycle_L1dcache;
-        static 	Tick  	Active_Pure_Hit_cycle_L1dcache;
-        static  Tick   	Active_Hit_cycle_L1dcache;
-        static 	Tick  	Active_Miss_cycle_L1dcache;
-
-
-
-
-
 
     // Statistics
     /**
@@ -472,12 +453,6 @@ class BaseCache : public MemObject
     /** The average overall latency of an MSHR miss. */
     Stats::Formula overallAvgMshrUncacheableLatency;
 
-    //Xiaoyang
-    Stats::Formula Active_Hit_Cycle;
-    Stats::Formula Active_Miss_Cycle;
-  // Stats::Value Accumulated_Hit_Cycle;
-    Stats::Formula  Active_Pure_Hit_Cycle;
-
     /**
      * @}
      */
@@ -507,41 +482,6 @@ class BaseCache : public MemObject
     {
         return blkSize;
     }
-
-//Xiaoyang
- static Tick GET_Active_Pure_Hit_Cycle_L1dcache()
-{
-    return Active_Pure_Hit_cycle_L1dcache;
-}
- static Tick GET_Accumulated_Hit_Cycle_L1dcache()
-{
-    return Accumulated_Hit_cycle_L1dcache;
-}
- static Tick GET_Active_Hit_Cycle_L1dcache()
-{
-    return Active_Hit_cycle_L1dcache;
-}
- static Tick GET_Active_Miss_Cycle_L1dcache()
-{
-    return Active_Miss_cycle_L1dcache;
-}
- static Tick GET_Active_Pure_Hit_Cycle_L2()
-{
-    return Active_Pure_Hit_cycle_L2;
-}
- static Tick GET_Accumulated_Hit_Cycle_L2()
-{
-    return Accumulated_Hit_cycle_L2;
-}
- static Tick GET_Active_Hit_Cycle_L2()
-{
-    return Active_Hit_cycle_L2;
-}
- static Tick GET_Active_Miss_Cycle_L2()
-{
-    return Active_Miss_cycle_L2;
-}
-
 
     const AddrRangeList &getAddrRanges() const { return addrRanges; }
 

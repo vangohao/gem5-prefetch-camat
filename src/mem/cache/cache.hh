@@ -75,6 +75,16 @@ class Cache : public BaseCache
 {
     friend class DPCPrefetcher;
 
+        public:
+
+        /** A typedef for a list of CacheBlk pointers. */
+                typedef std::list<CacheBlk*> BlkList;
+                Tick previous_pure_hit_cycle;
+                Tick current_pure_hit_cycle;
+                Tick previous_hit_cycle_L1;
+                Tick current_hit_cycle_L1;
+
+
   protected:
 
     /**

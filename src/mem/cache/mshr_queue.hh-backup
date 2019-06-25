@@ -68,10 +68,6 @@ class MSHRQueue : public Queue<MSHR>
 
   public:
 
-    Tick active_tick;
-    Tick current_tick;
-    Tick previous_tick;
-
     /**
      * Create a queue with a given number of entries.
      * @param num_entrys The number of entries in this queue.
@@ -100,10 +96,6 @@ class MSHRQueue : public Queue<MSHR>
      */
     MSHR *allocate(Addr blk_addr, unsigned blk_size, PacketPtr pkt,
                    Tick when_ready, Counter order, bool alloc_on_fill);
-
-
-    void deallocate_help(MSHR *mshr,Tick when);
-
 
     /**
      * Moves the MSHR to the front of the pending list if it is not

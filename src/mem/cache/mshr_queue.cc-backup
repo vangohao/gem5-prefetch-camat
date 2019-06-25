@@ -53,28 +53,12 @@ MSHRQueue::MSHRQueue(const std::string &_label,
                      int num_entries, int reserve, int demand_reserve)
     : Queue<MSHR>(_label, num_entries, reserve),
       demandReserve(demand_reserve)
-{
-   active_tick = 0;
-   current_tick = 0;
-   previous_tick = 0;
-}
+{}
 
 MSHR *
 MSHRQueue::allocate(Addr blk_addr, unsigned blk_size, PacketPtr pkt,
                     Tick when_ready, Counter order, bool alloc_on_fill)
 {
-
-    if (isEmpty()){
-       if (previous_tick<when_ready)
-        {
-            current_tick=when_ready;
-        }
-        else
-        {
-            current_tick=previous_tick;
-        }
-    }
-
     assert(!freeList.empty());
     MSHR *mshr = freeList.front();
     assert(mshr->getNumTargets() == 0);
@@ -87,26 +71,6 @@ MSHRQueue::allocate(Addr blk_addr, unsigned blk_size, PacketPtr pkt,
     allocated += 1;
     return mshr;
 }
-
-
-
-void
-MSHRQueue::deallocate_help(MSHR *mshr, Tick when)
-{
-  if (current_tick<when)
-  {
-    active_tick = when - current_tick;
-    previous_tick  = current_tick;
-   current_tick=when;
-   // printf("%ld\n",active_tick);
-  }
-  else
-  {
-      active_tick=0;
-  }
-    deallocate(mshr);
-}
-
 
 void
 MSHRQueue::moveToFront(MSHR *mshr)

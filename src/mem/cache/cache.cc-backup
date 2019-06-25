@@ -77,16 +77,6 @@ Cache::Cache(const CacheParams *p)
                                     name(), false,
                                     EventBase::Delayed_Writeback_Pri)
 {
-
-//Xiaoyang
-    Active_Pure_Hit_Cycle=0;
-    previous_pure_hit_cycle=0;
-    current_pure_hit_cycle=0;
-    current_hit_cycle_L1=0;
-    previous_hit_cycle_L1=0;
-    Active_Hit_Cycle=0;
-    Active_Miss_Cycle=0;
-
     tempBlock = new CacheBlk();
     tempBlock->data = new uint8_t[blkSize];
 
@@ -584,7 +574,6 @@ void
 Cache::promoteWholeLineWrites(PacketPtr pkt)
 {
     // Cache line clearing instructions
-
     if (doFastWrites && (pkt->cmd == MemCmd::WriteReq) &&
         (pkt->getSize() == blkSize) && (pkt->getOffset(blkSize) == 0)) {
         pkt->cmd = MemCmd::WriteLineReq;
@@ -596,75 +585,6 @@ bool
 Cache::recvTimingReq(PacketPtr pkt)
 {
     DPRINTF(CacheTags, "%s tags:\n%s\n", __func__, tags->print());
-
-
-
-//Xiaoyang
- if (previous_hit_cycle_L1 < curTick())
-                current_hit_cycle_L1=curTick();
-                else
-                current_hit_cycle_L1 = previous_hit_cycle_L1;
-        if (previous_pure_hit_cycle < curTick())
-                current_pure_hit_cycle=curTick();
-                else
-                current_pure_hit_cycle = previous_pure_hit_cycle;
-//      }
-    // we charge hitLatency for doing just about anything here
-    Cycles lat1 = lookupLatency;
-    Tick time = clockEdge(lat1) + pkt->headerDelay;
-if (isTopLevel!=true)
-Accumulated_Hit_cycle_L2+=(time-curTick());
-else
-{
-    if (name()=="system.cpu.dcache")
-    Accumulated_Hit_cycle_L1dcache+=(time-curTick());
-}
-    previous_hit_cycle_L1=current_hit_cycle_L1;
-    current_hit_cycle_L1=time;
-    if (current_hit_cycle_L1>previous_hit_cycle_L1)
-   {
-      if (isTopLevel!=true)
-      Active_Hit_cycle_L2+=(current_hit_cycle_L1 - previous_hit_cycle_L1);
-      else
-     {
-      if (name()=="system.cpu.dcache")
-      Active_Hit_cycle_L1dcache+=(current_hit_cycle_L1 - previous_hit_cycle_L1);
-     }
-      previous_hit_cycle_L1=current_hit_cycle_L1;
-     // active_hit_cycle=active_hit_cycle_L1;
-     // printf("%ld\n",active_hit_cycle);
-    }
-   if (mshrQueue.isEmpty())
-   {
-    previous_pure_hit_cycle=current_pure_hit_cycle;
-    current_pure_hit_cycle=time;
-    if (current_pure_hit_cycle>previous_pure_hit_cycle)
-   {
-
-      if (isTopLevel!=true)
-      Active_Pure_Hit_cycle_L2+=(current_pure_hit_cycle - previous_pure_hit_cycle);
-      else
-      {
-      if (name()=="system.cpu.dcache")
-      Active_Pure_Hit_cycle_L1dcache+=(current_pure_hit_cycle - previous_pure_hit_cycle);
-      }
-       previous_pure_hit_cycle=current_pure_hit_cycle;
-     }
-   }
-
-
-    /// @todo temporary hack to deal with memory corruption issue until
-    /// 4-phase transactions are complete
-//    for (int x = 0; x < pendingDelete.size(); x++)
-//        delete pendingDelete[x];
-//    pendingDelete.clear();
-
-
-
-
-
-
-
 
     assert(pkt->isRequest());
 
@@ -1568,26 +1488,14 @@ Cache::recvTimingResp(PacketPtr pkt)
         }
         mshrQueue.markPending(mshr);
         schedMemSideSendEvent(clockEdge() + pkt->payloadDelay);
-  } else {
-        mshrQueue.deallocate_help(mshr,curTick());
-        if (isTopLevel!=true)
-        {
-                Active_Miss_cycle_L2+=mshrQueue.active_tick;
-        }
-        else
-         {
-             //if (name()=="system.cpu.dcache")
-               Active_Miss_cycle_L1dcache+=mshrQueue.active_tick;
-         }
-
+    } else {
+        mshrQueue.deallocate(mshr);
         if (wasFull && !mshrQueue.isFull()) {
             clearBlocked(Blocked_NoMSHRs);
         }
 
-
         // Request the bus for a prefetch if this deallocation freed enough
         // MSHRs for a prefetch to take place
-
         if (prefetcher && mshrQueue.canPrefetch()) {
             Tick next_pf_time = std::max(prefetcher->nextPrefetchReadyTime(),
                                          clockEdge());
@@ -1595,32 +1503,6 @@ Cache::recvTimingResp(PacketPtr pkt)
                 schedMemSideSendEvent(next_pf_time);
         }
     }
-
-
-
-//    if (mshr->promoteDeferredTargets()) {
-        // avoid later read getting stale data while write miss is
-        // outstanding.. see comment in timingAccess()
-//        if (blk) {
-//            blk->status &= ~BlkReadable;
-//        }
-//        mshrQueue.markPending(mshr);
-//        schedMemSideSendEvent(clockEdge() + pkt->payloadDelay);
-//    } else {
-//        mshrQueue.deallocate(mshr);
-//        if (wasFull && !mshrQueue.isFull()) {
-//            clearBlocked(Blocked_NoMSHRs);
-//        }
-
-        // Request the bus for a prefetch if this deallocation freed enough
-        // MSHRs for a prefetch to take place
-//        if (prefetcher && mshrQueue.canPrefetch()) {
-//            Tick next_pf_time = std::max(prefetcher->nextPrefetchReadyTime(),
-//                                         clockEdge());
-//            if (next_pf_time != MaxTick)
-//                schedMemSideSendEvent(next_pf_time);
-//        }
-//    }
     // reset the xbar additional timinig  as it is now accounted for
     pkt->headerDelay = pkt->payloadDelay = 0;
 

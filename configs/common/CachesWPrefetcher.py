@@ -9,6 +9,8 @@ class L1Cache(Cache):
     response_latency = 2
     mshrs = 4
     tgts_per_mshr = 20
+    is_top_level = True
+
     #prefetcher = StridePrefetcher(degree=8, latency=1.0)
     '''
     def __init__(self, options=None):
